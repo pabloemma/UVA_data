@@ -8,8 +8,8 @@
 	//char timec1[11];
 	//char timec2[11];
 
-	const char *time1 =" time1 " ;
-	const char *time2 ="time2";// for time stamp. is the sum of both.
+	const char *time1 ="35638" ; // just a random picked time
+	const char *time2 ="13222.8282";// for time stamp. is the sum of both.
 	std::string timell; // exact time from data file, concatenation of time 1 and time 2
 	Long64_t timel;
 	Double_t FreqCenterLow =212.6;    // center frequency in MHz UVa uses lower boundary, gets recalculated in write header
