@@ -68,10 +68,11 @@ istream& operator >> ( istream& ins, data_t& data )
   
 int main(){
 
-char *outFileName = "PDPout.root";
+std::string temp ="PDPout.root";
+const char *outFileName = temp.c_str();
 extern int optind;
 gROOT->Reset(); 
-TROOT troot();  
+//TROOT troot();  
 TFile outFile(outFileName,"recreate");
 Double_t signal, freq;
 Int_t EventNum, TimeStamp;
@@ -88,8 +89,9 @@ PDPvar.Branch("signal",&signal,"signal/D");
   //ifstream infile("/home/dustin/store/work/g2pPDP/Log/2012-03-16_11h42m30s-base-RawSignal.csv" );
   //ifstream infile("/home/dustin/store/work/g2pPDP/Log/2012-03-16_11h42m30s-PolySignal.csv" );
   //ifstream infile("/home/dustin/store/work/Target/2015-04/2015-05-27_12h22m16s-PolySignal.csv" );
-  ifstream infile("/home/dustin/store/work/Target/data_look/anime_fast/SignalToNoise/dat/2016-12-04_16h30m45s-PolySignal.csv" );
+  //ifstream infile("/home/dustin/store/work/Target/data_look/anime_fast/SignalToNoise/dat/2016-12-04_16h30m45s-PolySignal.csv" );
   //ifstream infile("/home/dustin/store/work/Target/data_look/anime_fast/SignalToNoise/dat/2016-12-05_19h33m11s-PolySignal.csv" );
+  ifstream infile("/Users/klein/UVaNMR/2016-12-05_14h16m02s-PolySignal.csv");
 
 infile >> data;
 
