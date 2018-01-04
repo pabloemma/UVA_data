@@ -11,7 +11,11 @@
 #include "TROOT.h"
 #include "TF1.h"
 
+
+#include "PDPsig.hh"
 using namespace std;
+
+FILE *fp; // Output csv file
    
 
 typedef vector <double> record_t; 
@@ -68,6 +72,13 @@ istream& operator >> ( istream& ins, data_t& data )
   
 int main(){
 
+
+// open output csv file 
+	  fp = fopen("POLUVAfile.csv","w");
+
+
+
+
 std::string temp ="PDPout.root";
 const char *outFileName = temp.c_str();
 extern int optind;
@@ -91,7 +102,7 @@ PDPvar.Branch("signal",&signal,"signal/D");
   //ifstream infile("/home/dustin/store/work/Target/2015-04/2015-05-27_12h22m16s-PolySignal.csv" );
   //ifstream infile("/home/dustin/store/work/Target/data_look/anime_fast/SignalToNoise/dat/2016-12-04_16h30m45s-PolySignal.csv" );
   //ifstream infile("/home/dustin/store/work/Target/data_look/anime_fast/SignalToNoise/dat/2016-12-05_19h33m11s-PolySignal.csv" );
-  ifstream infile("/Users/klein/UVaNMR/2016-12-05_14h16m02s-PolySignal.csv");
+  ifstream infile("/Users/klein/UVaNMR/2016-12-05_19h25m40s-RawSignal.csv");
 
 infile >> data;
 
@@ -118,6 +129,7 @@ infile >> data;
 */
 
 for (unsigned n = 0; n < data.size(); n++){
+    int k = WriteHeader();
     ofstream myfile;
     //myfile.open ("nmr.dat");
     EventNum = n+1;
@@ -125,7 +137,14 @@ for (unsigned n = 0; n < data.size(); n++){
 
     if(TimeStamp>0){  // event selection
 for (unsigned i = 1; i < data[n].size(); i++){
-    signal = data[n][i]*20/1.4;
+
+    // write data to csv file
+    
+    signal = data[n][i]*20/1.4; // what is this fudge factor?
+    fprintf(fp,"%lf %s ",data[n][i],comma);
+   
+    
+    
     //myfile <<32.3+i*0.0016 <<" "<< signal<<"\n";
     freq = 212.600+i*0.0016;
     //myfile <<212.600+i*0.0016 <<" "<< signal<<"\n";
@@ -148,6 +167,61 @@ if(i==data[ n ].size()-1){
   //myfile.close();
   outFile.Write(); // write to the output file
   outFile.Close(); // close the output file
+  fclose (fp) ; // close the cvs file
 
   return 0;
   }
+  
+  
+  
+int WriteHeader()
+/* this routine writes the header in the csv file at every sweep
+It follows the LANL NMR format, so that we can read th file with the converter
+*/
+{
+// recalculate the frequency center
+    FreqCenter = FreqCenterLow + (ScanPoints)/2.*FreqStep;
+
+
+/*for dummy header.  */
+	for(int k = 0;k<10;k++)
+	{
+	  fputs(line1,fp);
+	}
+//    cout<<" I am in header \n";
+    fprintf(fp,"%s %s",time1,comma);
+
+    fprintf(fp,"%s %s",time2,comma);
+    fprintf(fp,"%lf %s ",FreqCenter, comma);
+
+
+    fprintf(fp,"%lf %s ",FreqStep,comma);
+    fprintf(fp,"%lf %s ",ScanPoints,comma);
+    IntScanPoints = (int) ScanPoints; // need this for the memory allocation of array
+    fprintf(fp,"%lf %s ",  ScanNumber,comma);
+    fprintf(fp,"%lf %s ",  Temperature,comma);
+    fprintf(fp,"%lf %s ",  ControllerV,comma);
+    fprintf(fp,"%lf %s ",  TuneV,comma);
+    fprintf(fp,"%lf %s ",  Offset,comma);
+
+	fprintf(fp,"%lf %s ",  Phase_Voltage,comma);
+	fprintf(fp,"%lf %s ",  Peak_Area,comma);
+	fprintf(fp,"%lf %s ",  QcurveAmp,comma);
+	fprintf(fp,"%lf %s ",  Pol_Calib_Const,comma);
+	fprintf(fp,"%lf %s ",  Gain,comma);
+	fprintf(fp,"%lf %s ",  Pol_Sign,comma); // 0 if not inverted 1, if inverted
+	fprintf(fp,"%lf %s ",  Log_Channel,comma);
+	fprintf(fp,"%lf %s ",  Peak_Amp,comma);
+	fprintf(fp,"%lf %s ",  NMRchan,comma);   // ph1 stands for placeholder
+	fprintf(fp,"%lf %s ",  PeakCenter,comma);
+	fprintf(fp,"%lf %s ",  BeamOn,comma);   // ph1 stands for placeholder
+	fprintf(fp,"%lf %s ",  RFlevel,comma);
+	fprintf(fp,"%lf %s ",  IFatt,comma);   // ph1 stands for placeholder
+	fprintf(fp,"%lf %s ",  HeT,comma);   // ph1 stands for placeholder
+	fprintf(fp,"%lf %s ",  HeP,comma);
+
+    	  
+
+
+return 0;
+}
